@@ -5,7 +5,7 @@ final int nodenum = 500 ;
 final int bound = 300 ;
 final int objective = 3 ;
 final int maxint = 999999 ;
-final int orderlength = 160000 ;
+final int orderlength = 100000 ;
 
 void setup() {
   // dir = "../../data/" ;
@@ -51,8 +51,10 @@ void paretoSolution(int[] m) {
                 break ;
               }
               if (status == 2) {
-                follow[pre[pa]] = follow[pa] ;
-                pre[follow[pa]] = pre[pa] ;
+                int g = pre[pa] ;
+                int gg = follow[pa] ;
+                follow[g] = gg ;
+                pre[gg] = g ;
                 empty[pa] = false ;
               }
             }
@@ -65,8 +67,10 @@ void paretoSolution(int[] m) {
                   break ;
                 }
                 if (status == 2) {
-                  follow[pre[pa]] = follow[pa] ;
-                  pre[follow[pa]] = pre[pa] ;
+                  int g = pre[pa] ;
+                  int gg = follow[pa] ;
+                  follow[g] = gg ;
+                  pre[gg] = g ;
                   empty[pa] = false ;
                 }
               }
@@ -79,8 +83,10 @@ void paretoSolution(int[] m) {
                   break ;
                 }
                 if (status == 2) {
-                  follow[pre[pa]] = follow[pa] ;
-                  pre[follow[pa]] = pre[pa] ;
+                  int g = pre[pa] ;
+                  int gg = follow[pa] ;
+                  follow[g] = gg ;
+                  pre[gg] = g ;
                   empty[pa] = false ;
                 }
               }
@@ -95,30 +101,37 @@ void paretoSolution(int[] m) {
                 println("s = " + s ) ;
               for(int k = 0 ; k < objective ; k++)
                 solution[s][k] = path[k] ;
+              int v3 = pre[v2] ;
               follow[s] = v2 ;
-              pre[s] = pre[v2] ;
-              follow[pre[v2]] = s ;
+              pre[s] = v3 ;
+              follow[v3] = s ;
               pre[v2] = s ;
               empty[s] = true ;
             }
           }
         }
+
     for(int i = 0 ; i < nodenum ; i++) {
       int u1 = nodenum + i ;
       int u2 = 2*nodenum + i ;
       if(follow[u1] != u1) {
-        follow[pre[i]] = follow[u1] ;
-        pre[follow[u1]] = follow[pre[i]] ;
-        follow[pre[u1]] = i ;
-        pre[i] = pre[u1] ;
+        int u3 = pre[i] ;
+        int u4 = pre[u1] ;
+        int u5 = follow[u1] ;
+        pre[u5] = u3 ;
+        follow[u3] = u5 ;
+        follow[u4] = i ;
+        pre[i] = u4 ;
         follow[u1] = u1 ;
         pre[u1] = u1 ;
       }
       if(follow[u2] != u2) {
-        follow[u1] = follow[u2] ;
-        pre[u1] = pre[u2] ;
-        pre[follow[u2]] = u1 ;
-        follow[pre[u2]] = u1 ;
+        int u3 = follow[u2] ;
+        int u4 = pre[u2] ;
+        follow[u1] = u3 ;
+        pre[u1] = u4 ;
+        pre[u3] = u1 ;
+        follow[u4] = u1 ;
         follow[u2] = u2 ;
         pre[u2] = u2 ;
       }
