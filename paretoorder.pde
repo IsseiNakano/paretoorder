@@ -4,9 +4,8 @@ String dirF = "/Users/nakano/Desktop/data500/" ;
 final int nodenum = 500 ;
 final int bound = 300 ;
 final int objective = 3 ;
-final int experimentNum = 10 ;
 final int maxint = 999999 ;
-final int orderlength = 150000 ;
+final int orderlength = 160000 ;
 
 void setup() {
   // dir = "../../data/" ;
@@ -22,14 +21,16 @@ void paretoSolution(int[] m) {
   int[] pre = orderReset() ;
   int[] follow = orderReset() ;
   boolean[] empty = new boolean[orderlength] ;
+  for(int i = 0 ; i < orderlength ; i++)
+    empty[i] = false ;
   int start = millis() ;
   follow[3*nodenum] = nodenum ;
   pre[3*nodenum] = nodenum ;
   follow[nodenum] = 3*nodenum ;
   pre[nodenum] = 3*nodenum ;
   empty[3*nodenum] = true ;
-  boolean flag = true ;
   int searchpoint = 3*nodenum ;
+  boolean flag = true ;
   while(flag) {
     flag = false ;
     for(int j = 0 ; j < nodenum ; j++)
@@ -90,7 +91,10 @@ void paretoSolution(int[] m) {
               if(s == -1)
                 s = emptysolution(empty, 3*nodenum) ;
               searchpoint = s ;
-              solution[s] = path ;
+              if(s == -1)
+                println("s = " + s ) ;
+              for(int k = 0 ; k < objective ; k++)
+                solution[s][k] = path[k] ;
               follow[s] = v2 ;
               pre[s] = pre[v2] ;
               follow[pre[v2]] = s ;
@@ -121,7 +125,17 @@ void paretoSolution(int[] m) {
     }
   }
   int times = millis() - start ;
-  println(times+","+solutionSize(empty)+","+emptysolution(empty, searchpoint)) ;
+  println(times+","+solutionSize(empty)) ;
+  // weightShow(weight) ;
+}
+
+int[] orderReset() {
+  int[] order = new int[orderlength] ;
+  for(int i = 0 ; i < orderlength ; i++) {
+    if(i < 3 * nodenum) order[i] = i ;
+    else order[i] = -1 ;
+  }
+  return order ;
 }
 
 int dominate(int[] v , int[] u) {
@@ -155,16 +169,6 @@ int solutionSize(boolean[] empty) {
   return count ;
 }
 
-int[] orderReset() {
-  int[] order = new int[orderlength] ;
-  for(int i = 0 ; i < orderlength ; i++) {
-    if(i < 3 * nodenum)
-      order[i] = i ;
-    else order[i] = -1 ;
-  }
-  return order ;
-}
-
 int[][][] instanceText(int[] m) {
  int[][][] weight = new int[nodenum][nodenum][objective] ;
  for (int k = 0 ; k < m.length ; k++) {
@@ -177,4 +181,20 @@ int[][][] instanceText(int[] m) {
    }
  }
  return weight ;
+}
+
+void weightShow(int[][][] weight) {
+  PrintWriter pw ;
+  pw = createWriter("/Users/nakano/Desktop/paretoc/weight.c") ;
+  pw.println("void weightReset(void) {") ;
+  for (int i = 0 ; i < nodenum ; i++) {
+    for(int j = 0 ; j < nodenum ; j++){
+      for(int k = 0 ; k < objective ; k++) {
+        pw.println("weight[" + i + "][" + j + "][" + k + "] =" + weight[i][j][k] + ";") ;
+      }
+    }
+  }
+  pw.println("}") ;
+  pw.flush() ;
+  pw.close() ;
 }
